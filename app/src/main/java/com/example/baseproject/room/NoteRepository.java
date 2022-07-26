@@ -29,18 +29,23 @@ public class NoteRepository {
         MyDataBase myDataBase = MyDataBase.getInstance(application);
         mNoteDAO = myDataBase.noteDAO();
 
+        //
         mHandlerThread = new HandlerThread("IO");
         mHandlerThread.start();
         mHandler = new Handler(mHandlerThread.getLooper());
     }
+
+
 
     public LiveData<List<Note>> getAllNotes() {
         return mNoteDAO.getAllNotes();
     }
 
     public void insertData(Note note) {
-        mHandler.post(() -> mNoteDAO.insertNote(note));
+        //mHandler.post(() -> mNoteDAO.insertNote(note));
+            new Thread(() -> mNoteDAO.insertNote(note)).start();
     }
+
 
     public List<Note> getListNote() {
         return mNoteDAO.getAllNotesNormal();
