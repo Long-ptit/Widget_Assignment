@@ -12,9 +12,12 @@ import androidx.lifecycle.LiveData;
 
 import com.example.baseproject.R;
 import com.example.baseproject.TodoListWidgetProvider;
+import com.example.baseproject.util.Util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
 
 public class NoteRepository {
     private NoteDAO mNoteDAO;
@@ -28,11 +31,9 @@ public class NoteRepository {
         listNote = new ArrayList<>();
         MyDataBase myDataBase = MyDataBase.getInstance(application);
         mNoteDAO = myDataBase.noteDAO();
-
-        //
         mHandlerThread = new HandlerThread("IO");
         mHandlerThread.start();
-        mHandler = new Handler(mHandlerThread.getLooper());
+        mHandler = new Handler(mHandlerThread.getLooper());// bắt tay
     }
 
 
@@ -42,8 +43,7 @@ public class NoteRepository {
     }
 
     public void insertData(Note note) {
-        //mHandler.post(() -> mNoteDAO.insertNote(note));
-            new Thread(() -> mNoteDAO.insertNote(note)).start();
+        mHandler.post(() -> mNoteDAO.insertNote(note));
     }
 
 
@@ -60,13 +60,6 @@ public class NoteRepository {
         mHandler.post(() -> {
             mNoteDAO.updateWork(!isCheck, id);
         });
-        updateData(application);
-    }
-
-    public void updateData(Context context) {
-        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context.getApplicationContext());
-        ComponentName thisAppWidget = new ComponentName(context.getApplicationContext().getPackageName(), TodoListWidgetProvider.class.getName());
-        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(thisAppWidget);
-        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.list_item);
+        Util.updateData(application);
     }
 }

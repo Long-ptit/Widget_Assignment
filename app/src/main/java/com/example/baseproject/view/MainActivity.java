@@ -1,4 +1,4 @@
-package com.example.baseproject;
+package com.example.baseproject.view;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import com.example.baseproject.R;
 import com.example.baseproject.databinding.ActivityMainBinding;
 import com.example.baseproject.room.Note;
 import com.example.baseproject.room.NoteRepository;
@@ -28,12 +29,14 @@ public class MainActivity extends AppCompatActivity implements NoteAdapter.CallB
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getPreferences(MODE_PRIVATE);
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         mMainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
         mMainViewModel.getListNoteLiveData().observe(this, notes -> mAdapter.setListData(notes));
         setUpRcv();
         mBinding.btnAdd.setOnClickListener(v -> {
             mMainViewModel.addData(new Note(mBinding.edtContent.getText().toString(), false));
+            mBinding.edtContent.setText("");
         });
         Util.updateData(getApplicationContext());
     }
